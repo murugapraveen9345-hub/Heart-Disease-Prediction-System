@@ -1,0 +1,108 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block body %}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card p-4 p-md-5 mb-5 shadow-sm" style="border-radius: 16px; border: 1px solid var(--border); background: var(--surface);">
+                <div class="section-header text-center mb-4">
+                    <div class="badge-label mb-2" style="display:inline-block; background: rgba(16,185,129,0.12); color: var(--primary); font-weight: 700; font-size: 13px; padding: 6px 18px; border-radius: 50px; letter-spacing: 1px; text-transform: uppercase;">
+                        <i class="fa fa-search mr-1"></i> Medical Directory
+                    </div>
+                    <h2 style="font-size: 2rem; font-weight: 800; letter-spacing: -0.5px; color: var(--text-primary); margin-top: 8px;">
+                        Search <span class="gradient-text">Specialist Doctors</span>
+                    </h2>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 6px;">
+                        Find verified cardiologists and healthcare specialists by name, specialty, or location
+                    </p>
+                </div>
+
+                <form action="" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-row mb-3">
+                        <div class="form-group col-md-5 mb-3">
+                            <label class="modern-label font-weight-bold" style="color: var(--text-primary); margin-bottom: 6px; display: block;">Search By</label>
+                            <select class="form-control modern-input" name="type" required>
+                                <option value="Name" {% if t == "Name" %}selected{% endif %}>Doctor Name</option>
+                                <option value="Type" {% if t == "Type" %}selected{% endif %}>Specialty Category</option>
+                                <option value="Address" {% if t == "Address" %}selected{% endif %}>City / Address</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-7 mb-3">
+                            <label class="modern-label font-weight-bold" style="color: var(--text-primary); margin-bottom: 6px; display: block;">Search Query</label>
+                            <input type="text" class="form-control modern-input" name="tex" value="{{tex|default:''}}" placeholder="e.g. Cardiologist, John, Mumbai..." required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary-custom w-100 justify-content-center" style="border: none; padding: 12px; font-size: 1rem; border-radius: 10px; cursor: pointer;">
+                        <i class="fa fa-search mr-2"></i> Search Specialists
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% if t %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card p-4 shadow-sm" style="border-radius: 16px; border: 1px solid var(--border); background: var(--surface);">
+                <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap pb-3" style="border-bottom: 1px solid var(--border);">
+                    <div>
+                        <h4 style="font-weight: 800; color: var(--text-primary); margin: 0;">Search Results</h4>
+                        <small style="color: var(--text-muted);">Filtered by {{t}}: "{{tex}}"</small>
+                    </div>
+                    <span class="badge badge-success px-3 py-2" style="font-size: 0.85rem; border-radius: 20px;">
+                        <i class="fa fa-user-md mr-1"></i> Verified Doctors
+                    </span>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="example" class="table table-hover mb-0" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Contact</th>
+                                <th>Address</th>
+                                <th>Category</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for i in doc %}
+                            {% if t == "Name" %}
+                                {% if i.user.id in li %}
+                                <tr>
+                                    <td>{{forloop.counter}}</td>
+                                    <td class="font-weight-bold" style="color: var(--text-primary);">Dr. {{i.user.first_name}} {{i.user.last_name}}</td>
+                                    <td><a href="mailto:{{i.user.email}}" style="color: var(--primary);">{{i.user.email}}</a></td>
+                                    <td>{{i.contact}}</td>
+                                    <td>{{i.address}}</td>
+                                    <td><span class="badge badge-success">{{i.category}}</span></td>
+                                </tr>
+                                {% endif %}
+                            {% else %}
+                                <tr>
+                                    <td>{{forloop.counter}}</td>
+                                    <td class="font-weight-bold" style="color: var(--text-primary);">Dr. {{i.user.first_name}} {{i.user.last_name}}</td>
+                                    <td><a href="mailto:{{i.user.email}}" style="color: var(--primary);">{{i.user.email}}</a></td>
+                                    <td>{{i.contact}}</td>
+                                    <td>{{i.address}}</td>
+                                    <td><span class="badge badge-success">{{i.category}}</span></td>
+                                </tr>
+                            {% endif %}
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4" style="color: var(--text-muted);">No doctors matching your search query were found.</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

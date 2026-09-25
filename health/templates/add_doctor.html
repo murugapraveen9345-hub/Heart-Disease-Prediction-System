@@ -1,0 +1,308 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block body %}
+<style>
+/* ========== DOCTOR FORM STYLES ========== */
+.form-container {
+    padding: 3rem 0;
+    background: transparent;
+    min-height: 100vh;
+}
+
+.doctor-form-card {
+    background: var(--surface);
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(16, 185, 129, 0.1);
+    overflow: hidden;
+    border: 1px solid #d1fae5;
+}
+
+.form-header {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
+
+.form-header h2 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+}
+
+.form-header p {
+    font-size: 0.95rem;
+    margin: 0;
+    opacity: 0.95;
+}
+
+.form-body {
+    padding: 2.5rem;
+}
+
+.form-section {
+    margin-bottom: 2rem;
+}
+
+.form-section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #d1fae5;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.form-section-icon {
+    font-size: 1.3rem;
+    color: #10b981;
+}
+
+.form-group-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.form-label .required {
+    color: #ef4444;
+}
+
+.form-input {
+    background: #f8fafc !important;
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 0.95rem !important;
+    font-family: 'Inter', sans-serif !important;
+    color: var(--text-primary) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.form-input:focus {
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1) !important;
+    background: white !important;
+    outline: none !important;
+}
+
+/* FILE INPUT */
+.file-input-wrapper {
+    position: relative;
+}
+
+.file-input-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #f8fafc;
+    border: 2px dashed #d1fae5;
+    padding: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.file-input-label:hover {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.05);
+    color: #10b981;
+}
+
+.file-input-wrapper input[type="file"] {
+    display: none;
+}
+
+.file-name {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: #10b981;
+}
+
+/* SUBMIT SECTION */
+.submit-section {
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 2px solid #d1fae5;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white !important;
+    border: none !important;
+    border-radius: 50px;
+    padding: 0.875rem 2.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    text-decoration: none;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .form-body { padding: 1.5rem; }
+    .form-group-row { grid-template-columns: 1fr; }
+    .form-header h2 { font-size: 1.4rem; }
+}
+</style>
+
+{% if error == "create" %}
+<script>
+    alert('Doctor added successfully! Redirecting to doctors list...');
+    window.location="{% url 'view_doctor' %}";
+</script>
+{% endif %}
+
+<div class="form-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="doctor-form-card">
+                    <!-- Form Header -->
+                    <div class="form-header">
+                        <h2><i class="fa fa-stethoscope mr-2"></i>{% if doctor %}Edit Doctor Profile{% else %}Register New Doctor{% endif %}</h2>
+                        <p>{% if doctor %}Update doctor information and credentials{% else %}Add a new doctor to the system{% endif %}</p>
+                    </div>
+
+                    <!-- Form Body -->
+                    <div class="form-body">
+                        <form action="{% if doctor %}/change_doctor/{{doctor.id}}/{% else %}/add_doctor{% endif %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <!-- Personal Information Section -->
+                            {% if not doctor %}
+                            <div class="form-section">
+                                <div class="form-section-title">
+                                    <span class="form-section-icon"><i class="fa fa-user"></i></span>
+                                    Account Information
+                                </div>
+                                <div class="form-group-row">
+                                    <div class="form-group">
+                                        <label class="form-label">First Name <span class="required">*</span></label>
+                                        <input type="text" class="form-input" name="first_name" placeholder="Enter first name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Last Name <span class="required">*</span></label>
+                                        <input type="text" class="form-input" name="last_name" placeholder="Enter last name" required>
+                                    </div>
+                                </div>
+                                <div class="form-group-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Username <span class="required">*</span></label>
+                                        <input type="text" class="form-input" name="username" placeholder="Create username" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Password <span class="required">*</span></label>
+                                        <div class="password-input-wrapper">
+                                            <input type="password" class="form-input" id="doctorPassword" name="password" placeholder="Create strong password" required>
+                                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility(this)" title="Show/Hide password" aria-label="Toggle password visibility">
+                                                <i class="fa fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <!-- Contact Information Section -->
+                            <div class="form-section">
+                                <div class="form-section-title">
+                                    <span class="form-section-icon"><i class="fa fa-id-card"></i></span>
+                                    Professional Information
+                                </div>
+                                <div class="form-group-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Email Address <span class="required">*</span></label>
+                                        <input type="email" class="form-input" name="email" placeholder="doctor@hospital.com" required value="{{doctor.user.email}}" {% if doctor %}readonly{% endif %}>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Contact Number <span class="required">*</span></label>
+                                        <input type="text" class="form-input" name="contact" placeholder="+91 98765 43210" required value="{{doctor.contact}}">
+                                    </div>
+                                </div>
+
+                                <div class="form-group-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Specialization <span class="required">*</span></label>
+                                        <input type="text" class="form-input" name="category" placeholder="e.g., Cardiologist, General Physician" value="{{doctor.category}}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Address / Clinic <span class="required">*</span></label>
+                                        <input type="text" class="form-input" name="address" placeholder="Enter clinic/hospital address" required value="{{doctor.address}}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Profile Image Section -->
+                            <div class="form-section">
+                                <div class="form-section-title">
+                                    <span class="form-section-icon"><i class="fa fa-image"></i></span>
+                                    Profile Picture
+                                </div>
+                                <div class="file-input-wrapper">
+                                    <label class="file-input-label" for="imageInput">
+                                        <i class="fa fa-cloud-upload"></i>
+                                        Click to upload profile picture
+                                    </label>
+                                    <input type="file" id="imageInput" name="image" accept="image/*" onchange="updateFileName(this)">
+                                    <div id="fileName" class="file-name"></div>
+                                    {% if doctor %}<div class="file-name">Current: {{doctor.image.url}}</div>{% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Submit Section -->
+                            <div class="submit-section">
+                                <button type="submit" class="btn-submit">
+                                    <i class="fa fa-check-circle mr-2"></i>{% if doctor %}Update{% else %}Register{% endif %} Doctor
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateFileName(input) {
+    const fileName = document.getElementById('fileName');
+    if (input.files && input.files[0]) {
+        fileName.textContent = '✓ ' + input.files[0].name;
+    }
+}
+</script>
+{% endblock %}

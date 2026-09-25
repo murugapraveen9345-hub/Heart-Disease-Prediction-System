@@ -1,0 +1,284 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block body %}
+<style>
+/* ========== PROFILE PAGE STYLES ========== */
+.profile-container {
+    padding: 3rem 0;
+    background: transparent;
+    min-height: 100vh;
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.profile-header h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+}
+
+.profile-header p {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+/* PROFILE CARD */
+.profile-card {
+    background: var(--surface);
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(16, 185, 129, 0.1);
+    overflow: hidden;
+    border: 1px solid #d1fae5;
+    margin-bottom: 2rem;
+}
+
+.profile-card-header {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    padding: 2rem;
+    color: white;
+    text-align: center;
+}
+
+.profile-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid rgba(255, 255, 255, 0.8);
+    margin: 0 auto 1rem;
+    object-fit: cover;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.profile-name {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.profile-role {
+    font-size: 0.95rem;
+    opacity: 0.9;
+    margin-top: 0.5rem;
+}
+
+/* PROFILE BODY */
+.profile-body {
+    padding: 2.5rem;
+}
+
+.profile-field {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 2rem;
+    padding: 1.2rem;
+    border-bottom: 1px solid #e5e7eb;
+    align-items: start;
+}
+
+.profile-field:last-child {
+    border-bottom: none;
+}
+
+.profile-label {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.profile-label i {
+    color: #10b981;
+    font-size: 1.1rem;
+}
+
+.profile-value {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+/* ACTION BUTTONS */
+.profile-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #e5e7eb;
+    justify-content: center;
+}
+
+.btn-primary-profile {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white !important;
+    border: none;
+    border-radius: 50px;
+    padding: 0.8rem 2rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-primary-profile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    text-decoration: none;
+    color: white;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .profile-field {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    .profile-image { width: 100px; height: 100px; }
+    .profile-name { font-size: 1.4rem; }
+    .profile-actions { flex-direction: column; }
+}
+</style>
+
+<div class="profile-container">
+    <div class="container">
+        <!-- Header -->
+        <div class="profile-header">
+            <h1><i class="fa fa-user-circle mr-2"></i>My Profile</h1>
+            <p>View and manage your account information</p>
+        </div>
+
+        <!-- Profile Card -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="profile-card">
+                    <!-- Header Section with Image -->
+                    <div class="profile-card-header">
+                        {% if error != "admin" and pro.image %}
+                            <img src="{{pro.image.url}}" alt="Profile" class="profile-image">
+                        {% else %}
+                            <div class="profile-image" style="background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+                                <i class="fa fa-user" style="font-size: 3rem; color: white;"></i>
+                            </div>
+                        {% endif %}
+                        <h2 class="profile-name">
+                            {% if profile_user.first_name or profile_user.last_name %}
+                                {{profile_user.first_name}} {{profile_user.last_name}}
+                            {% else %}
+                                {{profile_user.username}}
+                            {% endif %}
+                        </h2>
+                        {% if error == "admin" %}
+                            <p class="profile-role"><i class="fa fa-shield mr-2"></i>Administrator</p>
+                        {% elif error != "pat" %}
+                            <p class="profile-role"><i class="fa fa-stethoscope mr-2"></i>{{pro.category|default:"Doctor"}}</p>
+                        {% else %}
+                            <p class="profile-role"><i class="fa fa-heart mr-2"></i>Patient</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Profile Information -->
+                    <div class="profile-body">
+                        <!-- Full Name -->
+                        <div class="profile-field">
+                            <div class="profile-label">
+                                <i class="fa fa-user"></i> Full Name
+                            </div>
+                            <div class="profile-value">
+                                {% if profile_user.first_name or profile_user.last_name %}
+                                    {{profile_user.first_name}} {{profile_user.last_name}}
+                                {% else %}
+                                    {{profile_user.username}}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Username -->
+                        <div class="profile-field">
+                            <div class="profile-label">
+                                <i class="fa fa-id-badge"></i> Username
+                            </div>
+                            <div class="profile-value">
+                                {{profile_user.username}}
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="profile-field">
+                            <div class="profile-label">
+                                <i class="fa fa-envelope"></i> Email
+                            </div>
+                            <div class="profile-value">
+                                {{profile_user.email|default:"Not specified"}}
+                            </div>
+                        </div>
+
+                        <!-- Contact -->
+                        {% if error != "admin" or pro.contact %}
+                        <div class="profile-field">
+                            <div class="profile-label">
+                                <i class="fa fa-phone"></i> Contact
+                            </div>
+                            <div class="profile-value">
+                                {{pro.contact|default:"Not provided"}}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Address/City -->
+                        {% if error != "admin" or pro.address %}
+                        <div class="profile-field">
+                            <div class="profile-label">
+                                <i class="fa fa-map-marker"></i> Address
+                            </div>
+                            <div class="profile-value">
+                                {{pro.address|default:"Not provided"}}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Date of Birth -->
+                        {% if pro.dob %}
+                        <div class="profile-field">
+                            <div class="profile-label">
+                                <i class="fa fa-calendar"></i> Date of Birth
+                            </div>
+                            <div class="profile-value">
+                                {{pro.dob}}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Specialist (for Doctors) -->
+                        {% if error != "pat" and error != "admin" and pro.category %}
+                        <div class="profile-field">
+                            <div class="profile-label">
+                                <i class="fa fa-certificate"></i> Specialization
+                            </div>
+                            <div class="profile-value">
+                                {{pro.category}}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Action Buttons -->
+                        <div class="profile-actions">
+                            <a href="{% url 'edit_profile' %}" class="btn-primary-profile">
+                                <i class="fa fa-edit"></i> Edit Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

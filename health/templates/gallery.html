@@ -1,0 +1,389 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block body %}
+
+<style>
+/* ========== GALLERY STYLES ========== */
+.gallery-section {
+    padding: 60px 0 90px;
+}
+
+.gal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 28px;
+    margin-top: 30px;
+}
+
+.gal-card {
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    display: block;
+    text-decoration: none !important;
+}
+
+.gal-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 36px rgba(16, 185, 129, 0.22);
+    border-color: var(--primary);
+}
+
+.gal-card-img-wrapper {
+    position: relative;
+    overflow: hidden;
+    height: 250px;
+}
+
+.gal-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    display: block;
+}
+
+.gal-card:hover img {
+    transform: scale(1.08);
+}
+
+.gal-card .gal-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    background: linear-gradient(180deg, transparent 0%, rgba(15, 23, 42, 0.9) 100%);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.gal-overlay-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #ffffff !important;
+    margin: 0;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+.gal-overlay-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(16, 185, 129, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+}
+
+.gal-card:hover .gal-overlay-icon {
+    transform: scale(1.15);
+}
+
+/* POPUP MODERN STYLING */
+.popup-effect {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    transition: opacity 0.3s;
+    visibility: hidden;
+    opacity: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.popup-effect:target {
+    visibility: visible;
+    opacity: 1;
+}
+
+.popup {
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 20px !important;
+    max-width: 560px;
+    width: 100%;
+    position: relative;
+    margin: auto;
+    padding: 2.2rem;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5) !important;
+    text-align: center;
+    color: var(--text-primary) !important;
+    animation: zoomInPopup 0.3s ease-out;
+}
+
+@keyframes zoomInPopup {
+    from { opacity: 0; transform: scale(0.92); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.popup img {
+    border-radius: 12px;
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.popup .text-name-pop {
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: var(--text-primary) !important;
+    margin-top: 1.25rem;
+}
+
+.popup p {
+    color: var(--text-secondary) !important;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-top: 0.75rem;
+    margin-bottom: 0;
+}
+
+.popup .close {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--text-muted) !important;
+    text-decoration: none;
+    line-height: 1;
+    transition: all 0.2s;
+}
+
+.popup .close:hover {
+    color: var(--primary) !important;
+    transform: rotate(90deg);
+}
+
+html[data-theme="dark"] .popup {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+}
+
+html[data-theme="dark"] .popup .text-name-pop {
+    color: #f8fafc !important;
+}
+
+html[data-theme="dark"] .popup p {
+    color: #cbd5e1 !important;
+}
+
+html[data-theme="dark"] .popup .close {
+    color: #cbd5e1 !important;
+}
+</style>
+
+<div class="gallery-section py-5" id="gallery">
+    <div class="container py-lg-4">
+        <!-- Section Header -->
+        <div class="section-header text-center animate__animated animate__fadeIn mb-4">
+            <div class="badge-label mb-2" style="display:inline-block; background: rgba(16,185,129,0.12); color: var(--primary); font-weight: 700; font-size: 13px; padding: 8px 20px; border-radius: 50px; letter-spacing: 1px; text-transform: uppercase;">
+                <i class="fa fa-camera mr-1"></i> Clinical & Technology Gallery
+            </div>
+            <h2 style="font-size: 2.5rem; font-weight: 800; letter-spacing: -0.5px; color: var(--text-primary); margin-top: 10px;">
+                Visualizing <span class="gradient-text">Healthcare Innovation</span>
+            </h2>
+            <p style="color: var(--text-secondary); max-width: 620px; margin: 12px auto 0; font-size: 1.05rem; line-height: 1.6;">
+                Explore our modern cardiac diagnostic facilities, clinical methodologies, and intelligent heart health prediction workflows.
+            </p>
+        </div>
+
+        <!-- Gallery Grid -->
+        <div class="gal-grid">
+            <!-- 1 -->
+            <a href="#gal1" class="gal-card" title="Health Prediction">
+                <div class="gal-card-img-wrapper">
+                    <img src="{% static 'images/g1.jpg' %}" alt="Clinical Diagnostic Facility">
+                    <div class="gal-overlay">
+                        <span class="gal-overlay-title">Clinical Diagnostics</span>
+                        <span class="gal-overlay-icon"><i class="fa fa-expand"></i></span>
+                    </div>
+                </div>
+            </a>
+            <!-- 2 -->
+            <a href="#gal2" class="gal-card" title="Heart Health Screening">
+                <div class="gal-card-img-wrapper">
+                    <img src="{% static 'images/g2.jpg' %}" alt="Cardiac Ultrasound Assessment">
+                    <div class="gal-overlay">
+                        <span class="gal-overlay-title">Cardiac Screening</span>
+                        <span class="gal-overlay-icon"><i class="fa fa-expand"></i></span>
+                    </div>
+                </div>
+            </a>
+            <!-- 3 -->
+            <a href="#gal3" class="gal-card" title="Cardiovascular Analysis">
+                <div class="gal-card-img-wrapper">
+                    <img src="{% static 'images/g3.jpg' %}" alt="Doctor Consultation">
+                    <div class="gal-overlay">
+                        <span class="gal-overlay-title">Doctor Consultation</span>
+                        <span class="gal-overlay-icon"><i class="fa fa-expand"></i></span>
+                    </div>
+                </div>
+            </a>
+            <!-- 4 -->
+            <a href="#gal4" class="gal-card" title="Digital Health Records">
+                <div class="gal-card-img-wrapper">
+                    <img src="{% static 'images/g4.jpg' %}" alt="ECG Rhythm Monitoring">
+                    <div class="gal-overlay">
+                        <span class="gal-overlay-title">ECG Monitoring</span>
+                        <span class="gal-overlay-icon"><i class="fa fa-expand"></i></span>
+                    </div>
+                </div>
+            </a>
+            <!-- 5 -->
+            <a href="#gal5" class="gal-card" title="AI Risk Modeling">
+                <div class="gal-card-img-wrapper">
+                    <img src="{% static 'images/blog1.jpg' %}" alt="Clinical Pathology">
+                    <div class="gal-overlay">
+                        <span class="gal-overlay-title">Biomarker Analysis</span>
+                        <span class="gal-overlay-icon"><i class="fa fa-expand"></i></span>
+                    </div>
+                </div>
+            </a>
+            <!-- 6 -->
+            <a href="#gal6" class="gal-card" title="Predictive AI Model">
+                <div class="gal-card-img-wrapper">
+                    <img src="{% static 'images/blog2.jpg' %}" alt="Machine Learning Intelligence">
+                    <div class="gal-overlay">
+                        <span class="gal-overlay-title">Predictive AI Systems</span>
+                        <span class="gal-overlay-icon"><i class="fa fa-expand"></i></span>
+                    </div>
+                </div>
+            </a>
+            <!-- 7 -->
+            <a href="#gal7" class="gal-card" title="Patient Care Protocol">
+                <div class="gal-card-img-wrapper">
+                    <img src="{% static 'images/blog3.jpg' %}" alt="Doctor Patient Care">
+                    <div class="gal-overlay">
+                        <span class="gal-overlay-title">Patient Care Protocols</span>
+                        <span class="gal-overlay-icon"><i class="fa fa-expand"></i></span>
+                    </div>
+                </div>
+            </a>
+            <!-- 8 -->
+            <a href="#gal8" class="gal-card" title="Cardiac Rehabilitation">
+                <div class="gal-card-img-wrapper">
+                    <img src="{% static 'images/bg.jpg' %}" alt="Emergency Cardiac Care">
+                    <div class="gal-overlay">
+                        <span class="gal-overlay-title">Cardiac Rehabilitation</span>
+                        <span class="gal-overlay-icon"><i class="fa fa-expand"></i></span>
+                    </div>
+                </div>
+            </a>
+            <!-- 9 -->
+            <a href="#gal9" class="gal-card" title="Medical Innovation">
+                <div class="gal-card-img-wrapper">
+                    <img src="{% static 'images/bg1.jpg' %}" alt="Advanced Hospital Technology">
+                    <div class="gal-overlay">
+                        <span class="gal-overlay-title">Medical Technology</span>
+                        <span class="gal-overlay-icon"><i class="fa fa-expand"></i></span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Popups with High-Contrast Text in Both Modes -->
+<div id="gal1" class="popup-effect">
+    <div class="popup">
+        <img src="{% static 'images/g1.jpg' %}" alt="Clinical Diagnostics">
+        <h5 class="text-name-pop">Clinical Diagnostics</h5>
+        <p>State-of-the-art diagnostic screening and telemetry tracking designed to catch early indicators of cardiovascular risk.</p>
+        <a class="close" href="#gallery">&times;</a>
+    </div>
+</div>
+
+<div id="gal2" class="popup-effect">
+    <div class="popup">
+        <img src="{% static 'images/g2.jpg' %}" alt="Cardiac Screening">
+        <h5 class="text-name-pop">Cardiac Screening</h5>
+        <p>Comprehensive non-invasive screening combining blood pressure, cholesterol measurements, and metabolic indicators.</p>
+        <a class="close" href="#gallery">&times;</a>
+    </div>
+</div>
+
+<div id="gal3" class="popup-effect">
+    <div class="popup">
+        <img src="{% static 'images/g3.jpg' %}" alt="Doctor Consultation">
+        <h5 class="text-name-pop">Specialist Consultation</h5>
+        <p>Verified cardiologist reviews supporting data-driven clinical decision-making for individual patient risk profiles.</p>
+        <a class="close" href="#gallery">&times;</a>
+    </div>
+</div>
+
+<div id="gal4" class="popup-effect">
+    <div class="popup">
+        <img src="{% static 'images/g4.jpg' %}" alt="ECG Monitoring">
+        <h5 class="text-name-pop">ECG Rhythm Tracking</h5>
+        <p>Real-time electrocardiogram analysis correlating ST depression, slope, and thalach measurements with heart condition risk.</p>
+        <a class="close" href="#gallery">&times;</a>
+    </div>
+</div>
+
+<div id="gal5" class="popup-effect">
+    <div class="popup">
+        <img src="{% static 'images/blog1.jpg' %}" alt="Biomarker Analysis">
+        <h5 class="text-name-pop">Serum Biomarker Analysis</h5>
+        <p>Laboratory measurement of serum cholesterol and fasting blood sugar levels essential for multi-factor diagnostic accuracy.</p>
+        <a class="close" href="#gallery">&times;</a>
+    </div>
+</div>
+
+<div id="gal6" class="popup-effect">
+    <div class="popup">
+        <img src="{% static 'images/blog2.jpg' %}" alt="Predictive AI Systems">
+        <h5 class="text-name-pop">Predictive AI Architecture</h5>
+        <p>Ensemble Machine Learning models trained on clinical datasets to deliver over 95% accuracy in cardiovascular disease detection.</p>
+        <a class="close" href="#gallery">&times;</a>
+    </div>
+</div>
+
+<div id="gal7" class="popup-effect">
+    <div class="popup">
+        <img src="{% static 'images/blog3.jpg' %}" alt="Patient Care Protocols">
+        <h5 class="text-name-pop">Patient Care Protocols</h5>
+        <p>Personalized lifestyle guidelines, dietary interventions, and continuous tracking for patients with elevated risk factors.</p>
+        <a class="close" href="#gallery">&times;</a>
+    </div>
+</div>
+
+<div id="gal8" class="popup-effect">
+    <div class="popup">
+        <img src="{% static 'images/bg.jpg' %}" alt="Cardiac Rehabilitation">
+        <h5 class="text-name-pop">Cardiac Rehabilitation</h5>
+        <p>Structured follow-up programs assisting patients with long-term heart wellness, medication adherence, and monitored exercise.</p>
+        <a class="close" href="#gallery">&times;</a>
+    </div>
+</div>
+
+<div id="gal9" class="popup-effect">
+    <div class="popup">
+        <img src="{% static 'images/bg1.jpg' %}" alt="Medical Technology">
+        <h5 class="text-name-pop">Healthcare Innovation</h5>
+        <p>Harnessing artificial intelligence and modern clinical workflows to deliver accessible, preventative heart healthcare worldwide.</p>
+        <a class="close" href="#gallery">&times;</a>
+    </div>
+</div>
+
+{% endblock %}

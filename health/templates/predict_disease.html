@@ -1,0 +1,723 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block body %}
+<style>
+/* ========== PREDICTION RESULT PAGE STYLES ========== */
+.prediction-container {
+    padding: 3rem 0 5rem;
+    background: transparent;
+    min-height: 100vh;
+}
+
+.prediction-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.prediction-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.5px;
+}
+
+.prediction-header p {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+}
+
+/* MAIN RESULT CARD */
+.result-card-main {
+    background: var(--surface);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    border: 2px solid var(--border);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 3rem;
+}
+
+/* RESULT BANNER */
+.result-hero-banner {
+    padding: 3.5rem 2rem;
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.result-hero-banner.healthy {
+    background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+}
+
+.result-hero-banner.at-risk {
+    background: linear-gradient(135deg, #f43f5e 0%, #e11d48 50%, #be123c 100%);
+}
+
+.result-hero-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
+    animation: rotateGlow 20s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes rotateGlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.hero-heart-icon-wrapper {
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 1.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    animation: heartPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes heartPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); }
+    50% { transform: scale(1.12); box-shadow: 0 15px 45px rgba(255, 255, 255, 0.4); }
+}
+
+.hero-heart-icon-wrapper i {
+    font-size: 3.5rem;
+    color: #ffffff;
+}
+
+.hero-status-title {
+    font-size: 2.4rem;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    margin-bottom: 0.5rem;
+    color: #ffffff;
+}
+
+.hero-status-desc {
+    font-size: 1.15rem;
+    opacity: 0.95;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.5;
+    color: #ffffff;
+}
+
+/* STATS GRID */
+.stats-grid-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    padding: 2.5rem;
+    background: var(--surface);
+}
+
+.stat-item-card {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.stat-item-card:hover {
+    transform: translateY(-4px);
+    border-color: #10b981;
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.12);
+}
+
+.stat-item-icon {
+    font-size: 2.2rem;
+    margin-bottom: 0.75rem;
+    display: inline-block;
+}
+
+.stat-item-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.stat-item-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+/* ACTION BUTTONS STRIP */
+.action-buttons-strip {
+    padding: 1.5rem 2.5rem 2.5rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.btn-result-action {
+    padding: 0.85rem 2rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none !important;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-action-primary {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.btn-action-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.45);
+    color: white !important;
+}
+
+.btn-action-secondary {
+    background: transparent;
+    color: var(--text-primary) !important;
+    border: 2px solid var(--border);
+}
+
+.btn-action-secondary:hover {
+    border-color: #10b981;
+    color: #10b981 !important;
+    transform: translateY(-2px);
+}
+
+/* DOCTOR SECTION */
+.doctor-section-card {
+    background: var(--surface);
+    border-radius: 24px;
+    padding: 2.5rem;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.doctors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.doctor-item-box {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.doctor-item-box:hover {
+    transform: translateY(-4px);
+    border-color: #10b981;
+    box-shadow: 0 12px 30px rgba(16, 185, 129, 0.15);
+}
+
+/* ========== POPUP MODAL STYLES ========== */
+.result-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.result-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.result-modal-dialog {
+    background: #ffffff;
+    width: 100%;
+    max-width: 580px;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+    border: 2px solid #e2e8f0;
+    transform: scale(0.85) translateY(30px);
+    transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+}
+
+.result-modal-overlay.active .result-modal-dialog {
+    transform: scale(1) translateY(0);
+}
+
+.modal-header-hero {
+    padding: 3rem 2rem 2rem;
+    text-align: center;
+    color: white;
+    position: relative;
+}
+
+.modal-header-hero.healthy {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.modal-header-hero.at-risk {
+    background: linear-gradient(135deg, #f43f5e 0%, #dc2626 100%);
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modal-close-btn:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: rotate(90deg);
+}
+
+.modal-pulse-icon {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.2rem;
+    border: 3px solid rgba(255, 255, 255, 0.7);
+    animation: heartPulse 1.5s infinite;
+}
+
+.modal-pulse-icon i {
+    font-size: 2.8rem;
+    color: white;
+}
+
+.modal-title {
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin: 0 0 0.5rem;
+    color: #ffffff;
+}
+
+.modal-subtitle {
+    font-size: 1rem;
+    opacity: 0.95;
+    margin: 0;
+    color: #ffffff;
+}
+
+.modal-body-content {
+    padding: 2rem 2.5rem;
+    background: #ffffff;
+}
+
+.modal-insights-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
+}
+
+.modal-insights-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    margin-bottom: 0.6rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1e293b;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.modal-insights-list li i {
+    font-size: 1.15rem;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+/* CONFETTI CANVAS */
+#confettiCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 100000;
+}
+
+/* DARK MODE OVERRIDES */
+html[data-theme="dark"] .result-card-main,
+html[data-theme="dark"] .doctor-section-card {
+    background: #0f172a !important;
+    border-color: #1e293b !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-theme="dark"] .stats-grid-row,
+html[data-theme="dark"] .action-buttons-strip {
+    background: #0f172a !important;
+    border-color: #1e293b !important;
+}
+
+html[data-theme="dark"] .stat-item-card,
+html[data-theme="dark"] .doctor-item-box {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+}
+
+html[data-theme="dark"] .stat-item-card:hover,
+html[data-theme="dark"] .doctor-item-box:hover {
+    border-color: #10b981 !important;
+}
+
+html[data-theme="dark"] .stat-item-value {
+    color: #f8fafc !important;
+}
+
+html[data-theme="dark"] .result-modal-dialog {
+    background: #0f172a !important;
+    border-color: #334155 !important;
+}
+
+html[data-theme="dark"] .modal-body-content {
+    background: #0f172a !important;
+}
+
+html[data-theme="dark"] .modal-insights-list li {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+}
+</style>
+
+<!-- Confetti Canvas -->
+<canvas id="confettiCanvas"></canvas>
+
+<!-- Interactive Result Popup Modal -->
+<div class="result-modal-overlay active" id="healthResultModal">
+    <div class="result-modal-dialog">
+        <!-- Hero Header -->
+        <div class="modal-header-hero {% if pred == '0' %}healthy{% else %}at-risk{% endif %}">
+            <button class="modal-close-btn" onclick="closeResultModal()" title="Close dialog">
+                <i class="fa fa-times"></i>
+            </button>
+            <div class="modal-pulse-icon">
+                {% if pred == "0" %}
+                    <i class="fa fa-heart"></i>
+                {% else %}
+                    <i class="fa fa-heartbeat"></i>
+                {% endif %}
+            </div>
+            <h2 class="modal-title">
+                {% if pred == "0" %}
+                    🎉 Your Heart is Healthy!
+                {% else %}
+                    ⚠️ Health Alert: Risk Detected
+                {% endif %}
+            </h2>
+            <p class="modal-subtitle">
+                {% if pred == "0" %}
+                    AI Cardiac Diagnostic Engine confirms low cardiovascular risk.
+                {% else %}
+                    AI Health Assessment identified potential cardiovascular risk markers.
+                {% endif %}
+            </p>
+        </div>
+
+        <!-- Body Content -->
+        <div class="modal-body-content">
+            <ul class="modal-insights-list">
+                {% if pred == "0" %}
+                    <li><i class="fa fa-check-circle text-success"></i> <strong>AI Confidence:</strong> {{ accuracy|floatformat:1 }}% High Certainty</li>
+                    <li><i class="fa fa-shield text-success"></i> <strong>Risk Category:</strong> Minimal Cardiac Vulnerability</li>
+                    <li><i class="fa fa-trophy text-warning"></i> <strong>Recommendation:</strong> Maintain healthy diet & routine physical activity</li>
+                {% else %}
+                    <li><i class="fa fa-exclamation-triangle text-danger"></i> <strong>AI Confidence:</strong> {{ accuracy|floatformat:1 }}% Certainty Score</li>
+                    <li><i class="fa fa-stethoscope text-primary"></i> <strong>Medical Advice:</strong> Early clinical consultation recommended</li>
+                    <li><i class="fa fa-hospital-o text-danger"></i> <strong>Next Step:</strong> Schedule specialist review with cardiologists</li>
+                {% endif %}
+            </ul>
+
+            <div class="modal-actions">
+                <button class="btn-result-action btn-action-primary" onclick="closeResultModal()">
+                    <i class="fa fa-bar-chart"></i> View Full Analysis & Report
+                </button>
+                {% if pred != "0" %}
+                <a href="#doctorSection" class="btn-result-action btn-action-secondary" onclick="closeResultModal()">
+                    <i class="fa fa-user-md"></i> Consult Doctor
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="prediction-container">
+    <div class="container">
+        <!-- Main Result Card -->
+        <div class="result-card-main">
+            <!-- Hero Banner -->
+            <div class="result-hero-banner {% if pred == '0' %}healthy{% else %}at-risk{% endif %}">
+                <div class="hero-heart-icon-wrapper">
+                    {% if pred == "0" %}
+                        <i class="fa fa-heart"></i>
+                    {% else %}
+                        <i class="fa fa-heartbeat"></i>
+                    {% endif %}
+                </div>
+                <h1 class="hero-status-title">
+                    {% if pred == "0" %}
+                        Excellent Cardiac Health
+                    {% else %}
+                        Cardiovascular Risk Detected
+                    {% endif %}
+                </h1>
+                <p class="hero-status-desc">
+                    {% if pred == "0" %}
+                        Our machine learning model has evaluated your cardiac biometric parameters and concluded that your heart functions within healthy, safe benchmarks.
+                    {% else %}
+                        Our machine learning model detected elevated risk factors in your health metrics. We strongly encourage scheduling a checkup with a healthcare provider.
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid-row">
+                <div class="stat-item-card">
+                    <span class="stat-item-icon text-primary"><i class="fa fa-pie-chart"></i></span>
+                    <div class="stat-item-label">Prediction Accuracy</div>
+                    <div class="stat-item-value text-primary">{{ accuracy|floatformat:1 }}%</div>
+                </div>
+
+                <div class="stat-item-card">
+                    <span class="stat-item-icon {% if pred == '0' %}text-success{% else %}text-danger{% endif %}">
+                        <i class="fa {% if pred == '0' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                    </span>
+                    <div class="stat-item-label">Diagnostic Status</div>
+                    <div class="stat-item-value {% if pred == '0' %}text-success{% else %}text-danger{% endif %}">
+                        {% if pred == "0" %}Healthy{% else %}At Risk{% endif %}
+                    </div>
+                </div>
+
+                <div class="stat-item-card">
+                    <span class="stat-item-icon text-info"><i class="fa fa-history"></i></span>
+                    <div class="stat-item-label">Assessment Date</div>
+                    <div class="stat-item-value" style="font-size: 1.25rem; line-height: 1.8;">
+                        {% now "d M Y" %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons Strip -->
+            <div class="action-buttons-strip">
+                <a href="{% url 'patient_home' %}" class="btn-result-action btn-action-primary">
+                    <i class="fa fa-dashboard"></i> Patient Dashboard
+                </a>
+                <a href="{% url 'add_heartdetail' %}" class="btn-result-action btn-action-secondary">
+                    <i class="fa fa-refresh"></i> Run New Prediction
+                </a>
+                <button class="btn-result-action btn-action-secondary" onclick="window.print()">
+                    <i class="fa fa-print"></i> Print Assessment
+                </button>
+                <button class="btn-result-action btn-action-secondary" onclick="openResultModal()">
+                    <i class="fa fa-eye"></i> Show Summary Popup
+                </button>
+            </div>
+        </div>
+
+        <!-- Doctor Directory Section (For all, especially At Risk) -->
+        <div class="doctor-section-card" id="doctorSection">
+            <div class="section-header text-center mb-4">
+                <div class="badge-label mb-2" style="display:inline-block; background: rgba(16,185,129,0.12); color: #10b981; font-weight: 700; font-size: 13px; padding: 6px 18px; border-radius: 50px; letter-spacing: 1px; text-transform: uppercase;">
+                    <i class="fa fa-user-md mr-1"></i> Medical Specialists
+                </div>
+                <h2 style="font-size: 2rem; font-weight: 800; color: var(--text-primary); margin-top: 8px;">
+                    Available <span class="gradient-text">Cardiologists & Physicians</span>
+                </h2>
+                <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 6px;">
+                    Connect directly with verified cardiac specialists for professional advice and diagnosis
+                </p>
+            </div>
+
+            {% if doctor %}
+            <div class="doctors-grid">
+                {% for doc in doctor %}
+                <div class="doctor-item-box">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            {% if doc.image %}
+                                <img src="{{doc.image.url}}" alt="Dr. {{doc.user.first_name}}" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #10b981;">
+                            {% else %}
+                                <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                                    <i class="fa fa-user-md"></i>
+                                </div>
+                            {% endif %}
+                            <div>
+                                <h4 style="margin: 0; font-weight: 800; font-size: 1.1rem; color: var(--text-primary);">
+                                    Dr. {{doc.user.first_name}} {{doc.user.last_name}}
+                                </h4>
+                                <span style="font-size: 0.85rem; color: #10b981; font-weight: 600;">
+                                    {{doc.category|default:"Cardiologist"}}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+                            <i class="fa fa-map-marker text-danger mr-2"></i>{{doc.address|default:"Clinical Center"}}
+                        </div>
+                        <div style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                            <i class="fa fa-phone text-success mr-2"></i>{{doc.contact|default:"Available"}}
+                        </div>
+                    </div>
+
+                    <a href="mailto:{{doc.user.email}}?subject=Heart%20Health%20Consultation%20Request" class="btn-result-action btn-action-primary" style="width: 100%; justify-content: center; padding: 0.65rem 1rem; font-size: 0.88rem;">
+                        <i class="fa fa-envelope"></i> Contact Doctor
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <i class="fa fa-user-md fa-3x text-muted mb-3 d-block"></i>
+                <h5 style="color: var(--text-primary); font-weight: 700;">No Specialists Currently Listed</h5>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                    Please contact our support helpline or visit your nearest medical health center.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function closeResultModal() {
+    const modal = document.getElementById('healthResultModal');
+    if (modal) modal.classList.remove('active');
+}
+
+function openResultModal() {
+    const modal = document.getElementById('healthResultModal');
+    if (modal) modal.classList.add('active');
+}
+
+// Confetti Animation for Healthy result
+(function() {
+    const isHealthy = "{{ pred }}" === "0";
+    if (!isHealthy) return;
+
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    });
+
+    const pieces = [];
+    const colors = ['#10b981', '#34d399', '#6ee7b7', '#059669', '#14b8a6', '#f59e0b', '#3b82f6'];
+
+    for (let i = 0; i < 90; i++) {
+        pieces.push({
+            x: Math.random() * width,
+            y: Math.random() * height - height,
+            size: Math.random() * 8 + 4,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            speed: Math.random() * 3 + 2,
+            angle: Math.random() * 360,
+            rotationSpeed: Math.random() * 6 - 3
+        });
+    }
+
+    let animationFrame;
+    let startTime = Date.now();
+
+    function update() {
+        ctx.clearRect(0, 0, width, height);
+
+        // Run confetti for 4.5 seconds
+        if (Date.now() - startTime > 4500) {
+            ctx.clearRect(0, 0, width, height);
+            cancelAnimationFrame(animationFrame);
+            return;
+        }
+
+        pieces.forEach(p => {
+            p.y += p.speed;
+            p.angle += p.rotationSpeed;
+            if (p.y > height) {
+                p.y = -10;
+                p.x = Math.random() * width;
+            }
+
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.angle * Math.PI) / 180);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+            ctx.restore();
+        });
+
+        animationFrame = requestAnimationFrame(update);
+    }
+
+    update();
+})();
+</script>
+{% endblock %}

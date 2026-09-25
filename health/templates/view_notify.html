@@ -1,0 +1,60 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block body %}
+
+<div class="container-fluid px-lg-5 py-5">
+    <div class="card p-4 p-md-5 shadow-sm" style="border-radius: 18px; border: 1px solid var(--border); background: var(--surface);">
+        <div class="section-header text-center mb-4">
+            <div class="badge-label mb-2" style="display:inline-block; background: rgba(16,185,129,0.12); color: var(--primary); font-weight: 700; font-size: 13px; padding: 6px 18px; border-radius: 50px; letter-spacing: 1px; text-transform: uppercase;">
+                <i class="fa fa-stethoscope mr-1"></i> Patient Searches
+            </div>
+            <h2 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.5px; color: var(--text-primary); margin-top: 8px;">
+                New Search <span class="gradient-text">Records</span>
+            </h2>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 6px;">
+                Clinical searches and doctor consultation records
+            </p>
+        </div>
+
+        <div class="table-responsive">
+            <table id="example" class="display table table-hover" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Patient Name</th>
+                        <th>Doctor Name</th>
+                        <th>Symptom</th>
+                        <th>Disease</th>
+                        <th>Type</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for i in dis %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td class="font-weight-bold" style="color: var(--text-primary);">
+                            {% if i.user.user %}{{i.user.user.first_name}} {{i.user.user.last_name}}{% elif i.user %}{{i.user.first_name}} {{i.user.last_name}}{% else %}Patient{% endif %}
+                        </td>
+                        <td>
+                            {% if i.doctor.user %}Dr. {{i.doctor.user.first_name}} {{i.doctor.user.last_name}}{% else %}Dr. {{i.doctor}}{% endif %}
+                        </td>
+                        <td>{{i.symptom}}</td>
+                        <td><span class="badge badge-info">{{i.disease}}</span></td>
+                        <td>{{i.type.name|default:i.type}}</td>
+                        <td>{{i.date1}}</td>
+                        <td style="width:100px">
+                            <a href="{% url 'delete_notification' i.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')" title="Delete Record" style="border-radius: 6px;">
+                                <i class="fa fa-trash-o mr-1"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,198 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block body %}
+<style>
+/* ========== DOCTOR DASHBOARD STYLES ========== */
+.doctor-dashboard {
+    padding: 2.5rem 0;
+    background: transparent;
+    min-height: 100vh;
+}
+
+.dashboard-header {
+    margin-bottom: 3rem;
+    padding: 2rem 0;
+    text-align: center;
+}
+
+.dashboard-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+    margin: 0 0 1rem 0;
+}
+
+.dashboard-header p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* FUNCTION CARD */
+.function-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    position: relative;
+    overflow: hidden;
+}
+
+.function-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #10b981, #14b8a6);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.function-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 35px rgba(16, 185, 129, 0.12);
+    border-color: #10b981;
+}
+
+.function-card:hover::before {
+    transform: scaleX(1);
+}
+
+.function-icon {
+    font-size: 2.2rem;
+    color: #10b981;
+    margin-bottom: 1rem;
+    display: inline-block;
+}
+
+.function-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+}
+
+.function-description {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* WELCOME BANNER */
+.welcome-banner {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 2.5rem;
+    border-radius: 16px;
+    margin-bottom: 3rem;
+    text-align: center;
+    box-shadow: 0 12px 40px rgba(16, 185, 129, 0.25);
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 400px;
+    height: 400px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+.welcome-banner h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+    position: relative;
+    z-index: 1;
+}
+
+.welcome-banner p {
+    font-size: 1rem;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+    opacity: 0.95;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .dashboard-header h1 { font-size: 1.8rem; }
+    .welcome-banner h2 { font-size: 1.4rem; }
+}
+</style>
+
+<div class="doctor-dashboard">
+    <div class="container">
+        <!-- Welcome Banner -->
+        <div class="welcome-banner">
+            <h2><i class="fa fa-stethoscope mr-2"></i>Doctor's Portal</h2>
+            <p>Access patient predictions and manage medical records efficiently</p>
+        </div>
+
+        <!-- Header Section -->
+        <div class="dashboard-header">
+            <h1>Your Dashboard</h1>
+            <p>Manage and review patient health assessments</p>
+        </div>
+
+        <!-- Function Cards Grid -->
+        <div class="row">
+            <div class="col-lg-6">
+                <a href="{% url 'view_search_pat' %}" class="function-card">
+                    <div class="function-icon">
+                        <i class="fa fa-file-medical"></i>
+                    </div>
+                    <h3 class="function-title">Patient Predictions</h3>
+                    <p class="function-description">View all patient heart disease prediction results and medical assessments</p>
+                </a>
+            </div>
+
+            <div class="col-lg-6">
+                <a href="{% url 'profile_doctor' %}" class="function-card">
+                    <div class="function-icon">
+                        <i class="fa fa-user-md"></i>
+                    </div>
+                    <h3 class="function-title">My Profile</h3>
+                    <p class="function-description">Update your professional information and credentials</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <a href="/" class="function-card">
+                    <div class="function-icon">
+                        <i class="fa fa-home"></i>
+                    </div>
+                    <h3 class="function-title">System Overview</h3>
+                    <p class="function-description">View overall system metrics and health statistics</p>
+                </a>
+            </div>
+
+            <div class="col-lg-6">
+                <a href="{% url 'change_password' %}" class="function-card">
+                    <div class="function-icon">
+                        <i class="fa fa-lock"></i>
+                    </div>
+                    <h3 class="function-title">Security Settings</h3>
+                    <p class="function-description">Change your password and manage account security</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

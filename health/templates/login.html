@@ -1,0 +1,61 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block body %}
+{% if error == "pat1" %}
+<script>alert('Logged in successfully'); window.location="{% url 'patient_home' %}";</script>
+{% endif %}
+{% if error == "notmember" %}
+<script>alert('Your information verification is pending. Please login after some time'); window.location="{% url 'logout' %}";</script>
+{% endif %}
+{% if error == "pat2" %}
+<script>alert('Logged in successfully'); window.location="{% url 'doctor_home' %}";</script>
+{% endif %}
+{% if error == "not" %}
+<script>alert('Username & Password are not matching');</script>
+{% endif %}
+
+<section style="min-height: 85vh; display: flex; align-items: center; padding: 60px 0;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5 animate__animated animate__fadeInUp">
+                <div class="glass-card p-0" style="overflow: hidden;">
+                    <!-- Header -->
+                    <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 40px 40px 30px; text-align: center;">
+                        <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                            <i class="fa fa-lock" style="font-size: 24px; color: #fff;"></i>
+                        </div>
+                        <h3 style="color: #fff; font-weight: 700; font-size: 24px; margin: 0;">Welcome Back</h3>
+                        <p style="color: rgba(255,255,255,0.7); font-size: 14px; margin-top: 6px;">Sign in to your HeartGuard account</p>
+                    </div>
+                    <!-- Form -->
+                    <div style="padding: 40px;">
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            <div class="form-group mb-4">
+                                <label class="modern-label">Username</label>
+                                <input type="text" class="form-control modern-input" name="uname" placeholder="Enter your username" required>
+                            </div>
+                            <div class="form-group mb-4">
+                                <label class="modern-label">Password</label>
+                                <div class="password-input-wrapper">
+                                    <input type="password" class="form-control modern-input" id="loginPassword" name="pwd" placeholder="Enter your password" required>
+                                    <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility(this)" title="Show/Hide password" aria-label="Toggle password visibility">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary-custom w-100 justify-content-center mt-2" style="border: none; cursor: pointer; padding: 16px;">
+                                <i class="fa fa-sign-in"></i> Sign In
+                            </button>
+                            <p class="text-center mt-4 mb-0" style="font-size: 14px; color: var(--text-muted);">
+                                Don't have an account?
+                                <a href="{% url 'signup' %}" style="color: var(--primary); font-weight: 600; text-decoration: none;">Register here</a>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card p-4 shadow-sm" style="border-radius: 16px; border: 1px solid var(--border);">
+                <div class="section-header text-center mb-4">
+                    <div class="badge-label mb-2" style="display:inline-block; background: rgba(16,185,129,0.1); color: var(--primary); font-weight: 600; font-size: 13px; padding: 6px 16px; border-radius: 50px;">
+                        <i class="fa fa-user-md mr-1"></i> Doctor Verification
+                    </div>
+                    <h2 style="font-size: 1.8rem; font-weight: 800; color: var(--text-primary);">Assign Status</h2>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">Update authorization status for this doctor</p>
+                </div>
+
+                <form id="loginForm" action="#" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group mb-3">
+                        <label class="modern-label font-weight-bold" style="color: var(--text-primary); margin-bottom: 6px; display: block;">Username</label>
+                        <input type="text" name="uname" id="email" value="{{prod.user.username}}" class="form-control modern-input" readonly>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="modern-label font-weight-bold" style="color: var(--text-primary); margin-bottom: 6px; display: block;">Status</label>
+                        <select name="stat" class="form-control modern-input" required>
+                            <option value="">---- Select Status ----</option>
+                            <option value="Accept">Accept (Authorize)</option>
+                            <option value="Reject">Reject (Revoke)</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary-custom w-100 justify-content-center" type="submit" style="border: none; padding: 12px; font-size: 1rem; border-radius: 10px; cursor: pointer;">
+                        <i class="fa fa-check mr-2"></i> Update Status
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if terror %}
+<script>
+    alert('Assigned Status successfully');
+    window.location = "{% url 'view_doctor' %}";
+</script>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,376 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block body %}
+<style>
+/* ========== HEART DETAIL FORM STYLES ========== */
+.form-container {
+    padding: 3rem 0;
+    background: transparent;
+    min-height: 100vh;
+}
+
+.form-card {
+    background: var(--surface);
+    border-radius: 24px;
+    box-shadow: 0 12px 40px rgba(16, 185, 129, 0.1);
+    overflow: hidden;
+    border: 1px solid #d1fae5;
+    animation: cardFloat 0.8s ease-out;
+    transition: all 0.3s ease;
+}
+
+.form-card:hover {
+    box-shadow: 0 20px 60px rgba(16, 185, 129, 0.2);
+}
+
+.form-header {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    animation: slideDown 0.6s ease-out;
+}
+
+.form-header h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+    color: #ffffff !important;
+}
+
+.form-header p {
+    font-size: 1rem;
+    margin: 0;
+    opacity: 0.95;
+    color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.form-body {
+    padding: 2.5rem;
+}
+
+.form-section {
+    margin-bottom: 2.5rem;
+    animation: slideInUp 0.6s ease-out backwards;
+}
+
+.form-section:nth-child(1) { animation-delay: 0.1s; }
+.form-section:nth-child(2) { animation-delay: 0.2s; }
+.form-section:nth-child(3) { animation-delay: 0.3s; }
+
+.form-section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #d1fae5;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.form-section-icon {
+    font-size: 1.4rem;
+    color: #10b981;
+}
+
+.form-group-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-label .required {
+    color: #ef4444;
+}
+
+.form-input, .form-select {
+    background: #f8fafc !important;
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 0.95rem !important;
+    font-family: 'Inter', sans-serif !important;
+    color: var(--text-primary) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    width: 100%;
+}
+
+.form-input:focus, .form-select:focus {
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15) !important;
+    background: white !important;
+    outline: none !important;
+}
+
+.input-hint {
+    font-size: 0.78rem;
+    color: #10b981;
+    margin-top: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-weight: 500;
+}
+
+.gender-select-box {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 0.75rem 1rem;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 2px solid #e2e8f0;
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white !important;
+    border: none !important;
+    border-radius: 50px;
+    padding: 0.95rem 3rem;
+    font-weight: 700;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.btn-submit:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 12px 30px rgba(16, 185, 129, 0.5);
+    text-decoration: none;
+}
+
+/* INFO BOX */
+.info-box {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(20, 184, 166, 0.08));
+    border-left: 4px solid #10b981;
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+.info-box h3 {
+    margin: 0 0 0.35rem 0;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.info-box p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+/* DARK MODE OVERRIDES */
+html[data-theme="dark"] .form-card {
+    background: #0f172a !important;
+    border-color: #1e293b !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-theme="dark"] .form-section-title {
+    color: #f8fafc !important;
+    border-bottom-color: #334155 !important;
+}
+
+html[data-theme="dark"] .form-label {
+    color: #e2e8f0 !important;
+}
+
+html[data-theme="dark"] .form-input,
+html[data-theme="dark"] .form-select,
+html[data-theme="dark"] .gender-select-box {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+}
+
+html[data-theme="dark"] .form-input:focus,
+html[data-theme="dark"] .form-select:focus {
+    background: #0f172a !important;
+    border-color: #10b981 !important;
+    color: #ffffff !important;
+}
+
+html[data-theme="dark"] .info-box {
+    background: rgba(16, 185, 129, 0.12) !important;
+    border-left-color: #10b981 !important;
+}
+
+html[data-theme="dark"] .info-box h3 {
+    color: #f8fafc !important;
+}
+
+html[data-theme="dark"] .info-box p {
+    color: #cbd5e1 !important;
+}
+</style>
+
+<div class="form-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="form-card">
+                    <!-- Form Header -->
+                    <div class="form-header">
+                        <h2><i class="fa fa-heartbeat mr-2"></i>Heart Disease Risk Assessment</h2>
+                        <p>Enter patient biometric parameters for AI machine learning risk prediction</p>
+                    </div>
+
+                    <!-- Form Body -->
+                    <div class="form-body">
+                        <!-- Info Box -->
+                        <div class="info-box">
+                            <h3><i class="fa fa-info-circle mr-2 text-success"></i>AI Health Assessment</h3>
+                            <p>Provide your latest medical measurements. The AI Gradient Boosting model will analyze your biometric signals and calculate cardiac vulnerability.</p>
+                        </div>
+
+                        <form action="{% url 'add_heartdetail' %}" method="post" id="predictionForm">
+                            {% csrf_token %}
+
+                            <!-- Section 1: Basic Information -->
+                            <div class="form-section">
+                                <div class="form-section-title">
+                                    <span class="form-section-icon"><i class="fa fa-user"></i></span>
+                                    1. Personal Demographics
+                                </div>
+                                <div class="form-group-row">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Patient Age <span class="required">*</span>
+                                        </label>
+                                        <input type="number" class="form-input" name="age" min="1" max="120" value="45" placeholder="e.g., 45" required>
+                                        <div class="input-hint"><i class="fa fa-check-circle"></i>Age in years (1 - 120)</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Biological Gender <span class="required">*</span>
+                                        </label>
+                                        <div class="gender-select-box">
+                                            <label style="display: flex; align-items: center; gap: 0.45rem; margin: 0; cursor: pointer; font-weight: 600;">
+                                                <input type="radio" name="sex" value="1" checked required style="cursor: pointer; width: 18px; height: 18px; accent-color: #10b981;">
+                                                <i class="fa fa-mars text-primary"></i> Male
+                                            </label>
+                                            <label style="display: flex; align-items: center; gap: 0.45rem; margin: 0; cursor: pointer; font-weight: 600;">
+                                                <input type="radio" name="sex" value="0" required style="cursor: pointer; width: 18px; height: 18px; accent-color: #10b981;">
+                                                <i class="fa fa-venus text-danger"></i> Female
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Section 2: Cardiac Symptoms -->
+                            <div class="form-section">
+                                <div class="form-section-title">
+                                    <span class="form-section-icon"><i class="fa fa-heartbeat"></i></span>
+                                    2. Cardiac Symptoms & Heart Rate
+                                </div>
+                                <div class="form-group-row">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Chest Pain Classification <span class="required">*</span>
+                                        </label>
+                                        <select class="form-select" name="cp" required>
+                                            <option value="0" selected>0 — Typical Angina (Exertional discomfort)</option>
+                                            <option value="1">1 — Atypical Angina (Non-exertional pain)</option>
+                                            <option value="2">2 — Non-Anginal Pain (Musculoskeletal)</option>
+                                            <option value="3">3 — Asymptomatic (No chest pain)</option>
+                                        </select>
+                                        <div class="input-hint"><i class="fa fa-check-circle"></i>Chest discomfort type</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Maximum Heart Rate (Thalach) <span class="required">*</span>
+                                        </label>
+                                        <input type="number" class="form-input" name="thalach" min="60" max="220" value="150" placeholder="e.g., 150" required>
+                                        <div class="input-hint"><i class="fa fa-check-circle"></i>Max achieved BPM (60 - 220)</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Section 3: Blood Pressure & Cholesterol -->
+                            <div class="form-section">
+                                <div class="form-section-title">
+                                    <span class="form-section-icon text-danger"><i class="fa fa-tint"></i></span>
+                                    3. Vitals, Blood Pressure & Cholesterol
+                                </div>
+                                <div class="form-group-row">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Resting Blood Pressure <span class="required">*</span>
+                                        </label>
+                                        <input type="number" class="form-input" name="trestbps" min="70" max="240" value="120" placeholder="e.g., 120" required>
+                                        <div class="input-hint"><i class="fa fa-check-circle"></i>Systolic mmHg (70 - 240)</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Serum Cholesterol Level <span class="required">*</span>
+                                        </label>
+                                        <input type="number" class="form-input" name="chole" min="100" max="600" value="210" placeholder="e.g., 210" required>
+                                        <div class="input-hint"><i class="fa fa-check-circle"></i>mg/dl (Normal: 120 - 240)</div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group-row mt-3">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Fasting Blood Sugar > 120 mg/dl <span class="required">*</span>
+                                        </label>
+                                        <select class="form-select" name="fbs" required>
+                                            <option value="0" selected>Normal (≤ 120 mg/dl)</option>
+                                            <option value="1">Elevated / Diabetic (> 120 mg/dl)</option>
+                                        </select>
+                                        <div class="input-hint"><i class="fa fa-check-circle"></i>Fasting blood glucose level</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Section -->
+                            <div class="text-center pt-3 border-top" style="border-color: var(--border) !important;">
+                                <button type="submit" class="btn-submit" id="submitBtn">
+                                    <i class="fa fa-heartbeat"></i> Submit & Run AI Prediction
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('predictionForm').addEventListener('submit', function() {
+    const btn = document.getElementById('submitBtn');
+    btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Analyzing Heart Biomarkers...';
+    btn.style.opacity = '0.85';
+    btn.style.pointerEvents = 'none';
+});
+</script>
+{% endblock %}

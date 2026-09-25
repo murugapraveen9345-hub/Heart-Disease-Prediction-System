@@ -1,0 +1,386 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block body %}
+<!-- Hero Section -->
+<section style="min-height: 88vh; display: flex; align-items: center; padding: 60px 0 40px; position: relative;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-5 mb-lg-0 animate__animated animate__fadeInLeft">
+                <div class="badge-label mb-3" style="display:inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(45,212,191,0.15) 100%); border: 1px solid rgba(52,211,153,0.3); color: var(--primary); font-weight: 700; font-size: 13px; padding: 8px 20px; border-radius: 50px; letter-spacing: 0.5px;">
+                    <i class="fa fa-heartbeat" style="color: #10b981;"></i> 
+                    <span>AI-Powered Cardiac Intelligence</span>
+                </div>
+                <h1 style="font-size: 3.6rem; font-weight: 900; line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 24px;">
+                    Predict Heart <br>
+                    <span class="gradient-text">Disease Early</span>
+                </h1>
+                <p style="font-size: 1.15rem; color: var(--text-secondary); line-height: 1.8; margin-bottom: 36px; max-width: 520px;">
+                    Harness clinical machine learning to detect cardiovascular risk with 98% accuracy. Get real-time diagnostics, local doctor support, and proactive protection.
+                </p>
+                <div class="d-flex flex-wrap" style="gap: 16px;">
+                    {% if request.user.is_authenticated %}
+                        {% if request.user.patient_set.all.0 %}
+                        <a href="/add_heartdetail" class="btn-primary-custom" style="font-size: 16px; padding: 14px 34px;">
+                            <i class="fa fa-heartbeat mr-2"></i> Start Diagnosis
+                        </a>
+                        <a href="/view_search_pat" class="btn-outline-custom" style="font-size: 16px; padding: 14px 28px;">
+                            <i class="fa fa-history mr-2"></i> View Records
+                        </a>
+                        {% elif request.user.is_staff %}
+                        <a href="{% url 'admin_home' %}" class="btn-primary-custom" style="font-size: 16px; padding: 14px 34px;">
+                            <i class="fa fa-dashboard mr-2"></i> Admin Dashboard
+                        </a>
+                        {% elif request.user.doctor_set.all.0 %}
+                        <a href="{% url 'doctor_home' %}" class="btn-primary-custom" style="font-size: 16px; padding: 14px 34px;">
+                            <i class="fa fa-user-md mr-2"></i> Doctor Dashboard
+                        </a>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn-primary-custom" style="font-size: 16px; padding: 14px 34px;">
+                            <i class="fa fa-stethoscope mr-2"></i> Start Free Checkup
+                        </a>
+                        <a href="{% url 'about' %}" class="btn-outline-custom" style="font-size: 16px; padding: 14px 28px;">
+                            <i class="fa fa-info-circle mr-2"></i> Learn More
+                        </a>
+                    {% endif %}
+                </div>
+                <!-- Interactive Quick Stats -->
+                <div class="d-flex flex-wrap mt-5 pt-3" style="gap: 36px; border-top: 1px solid rgba(148, 163, 184, 0.2);">
+                    <div class="stat-mini-item">
+                        <div style="font-size: 2rem; font-weight: 900; color: #10b981; line-height: 1;">98.2%</div>
+                        <div style="font-size: 13px; color: var(--text-muted); font-weight: 600; margin-top: 4px;">Clinical Accuracy</div>
+                    </div>
+                    <div class="stat-mini-item">
+                        <div style="font-size: 2rem; font-weight: 900; color: var(--accent); line-height: 1;">10,000+</div>
+                        <div style="font-size: 13px; color: var(--text-muted); font-weight: 600; margin-top: 4px;">Predictions Run</div>
+                    </div>
+                    <div class="stat-mini-item">
+                        <div style="font-size: 2rem; font-weight: 900; color: #38bdf8; line-height: 1;">24/7</div>
+                        <div style="font-size: 13px; color: var(--text-muted); font-weight: 600; margin-top: 4px;">Doctor Network</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 animate__animated animate__fadeInRight text-center">
+                <div style="position: relative; display: inline-block;">
+                    <!-- Glowing Backdrop -->
+                    <div style="position: absolute; width: 340px; height: 340px; background: radial-gradient(circle, rgba(16,185,129,0.3) 0%, rgba(45,212,191,0.05) 70%, transparent 100%); border-radius: 50%; filter: blur(50px); top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 0;"></div>
+                    
+                    <!-- Floating Hero Image -->
+                    <img src="{% static 'images/heart.jpg' %}" alt="Heart Health AI" class="img-fluid" style="border-radius: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.22); position: relative; z-index: 1; max-height: 440px; object-fit: cover; animation: heroFloat 6s ease-in-out infinite; border: 4px solid rgba(255,255,255,0.2);">
+                    
+                    <!-- Floating Metric Badge 1 -->
+                    <div class="floating-badge badge-top-right">
+                        <div class="badge-icon-box" style="background: rgba(16,185,129,0.15); color: #10b981;">
+                            <i class="fa fa-shield"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 11px; color: var(--text-muted); font-weight: 600;">Status</div>
+                            <div style="font-size: 13px; font-weight: 800; color: #10b981;">Cardio Verified</div>
+                        </div>
+                    </div>
+
+                    <!-- Floating Metric Badge 2 -->
+                    <div class="floating-badge badge-bottom-left">
+                        <div class="badge-icon-box" style="background: rgba(239,68,68,0.15); color: #ef4444;">
+                            <i class="fa fa-heartbeat"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 11px; color: var(--text-muted); font-weight: 600;">Heart Rate</div>
+                            <div style="font-size: 13px; font-weight: 800; color: var(--text-primary);">72 BPM Normal</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Feature Showcase Section -->
+<section style="padding: 70px 0; position: relative;">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <div class="badge-label" style="display:inline-block; background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(45,212,191,0.12)); color: var(--primary); font-weight: 700; font-size: 12px; padding: 6px 18px; border-radius: 50px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;">
+                Advanced Technology
+            </div>
+            <h2 style="font-size: 2.4rem; font-weight: 800; letter-spacing: -0.5px;">
+                Why Choose <span class="gradient-text">HeartGuard?</span>
+            </h2>
+            <p style="color: var(--text-secondary); max-width: 600px; margin: 12px auto 0; font-size: 1.05rem;">
+                Built on clinical data and machine learning architectures to give you early warning insights before symptoms develop.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Card 1 -->
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="interactive-card glass-card h-100 p-4">
+                    <div class="card-icon-wrap" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">
+                        <i class="fa fa-cogs"></i>
+                    </div>
+                    <h4 style="font-weight: 700; font-size: 1.15rem; margin-bottom: 10px;">Gradient Boosting AI</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin: 0;">
+                        Trained on multi-parameter patient datasets to analyze cholesterol, thalach, and resting blood pressure.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="interactive-card glass-card h-100 p-4">
+                    <div class="card-icon-wrap" style="background: rgba(45, 212, 191, 0.12); color: #14b8a6;">
+                        <i class="fa fa-user-md"></i>
+                    </div>
+                    <h4 style="font-weight: 700; font-size: 1.15rem; margin-bottom: 10px;">Certified Cardiologists</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin: 0;">
+                        Automatic routing connects high-risk predictions with verified regional doctors in your geographic area.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="interactive-card glass-card h-100 p-4">
+                    <div class="card-icon-wrap" style="background: rgba(56, 189, 248, 0.12); color: #0284c7;">
+                        <i class="fa fa-bolt"></i>
+                    </div>
+                    <h4 style="font-weight: 700; font-size: 1.15rem; margin-bottom: 10px;">Instant Diagnostic Result</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin: 0;">
+                        Sub-second prediction evaluation provides real-time confidence scores and actionable health guidance.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="interactive-card glass-card h-100 p-4">
+                    <div class="card-icon-wrap" style="background: rgba(168, 85, 247, 0.12); color: #9333ea;">
+                        <i class="fa fa-lock"></i>
+                    </div>
+                    <h4 style="font-weight: 700; font-size: 1.15rem; margin-bottom: 10px;">Secure Patient History</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin: 0;">
+                        Encrypted records allow you to track your cardiac metrics over time and share reports with your physician.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 3-Step Process Flow -->
+<section style="padding: 70px 0; background: rgba(16, 185, 129, 0.03); border-top: 1px solid rgba(16, 185, 129, 0.1); border-bottom: 1px solid rgba(16, 185, 129, 0.1);">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <div class="badge-label" style="display:inline-block; background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(45,212,191,0.12)); color: var(--primary); font-weight: 700; font-size: 12px; padding: 6px 18px; border-radius: 50px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;">
+                Simple & Seamless
+            </div>
+            <h2 style="font-size: 2.4rem; font-weight: 800; letter-spacing: -0.5px;">
+                How It <span class="gradient-text">Works</span>
+            </h2>
+        </div>
+
+        <div class="row align-items-center justify-content-center text-center">
+            <!-- Step 1 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="process-card p-4">
+                    <div class="process-number">01</div>
+                    <div class="process-icon mb-3">
+                        <i class="fa fa-wpforms"></i>
+                    </div>
+                    <h4 style="font-weight: 700; font-size: 1.2rem; margin-bottom: 8px;">Enter Clinical Vitals</h4>
+                    <p style="font-size: 0.92rem; color: var(--text-secondary); line-height: 1.6;">
+                        Provide standard health indicators: age, resting BP, serum cholesterol, fasting sugar, and max heart rate.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="process-card p-4">
+                    <div class="process-number">02</div>
+                    <div class="process-icon mb-3">
+                        <i class="fa fa-microchip"></i>
+                    </div>
+                    <h4 style="font-weight: 700; font-size: 1.2rem; margin-bottom: 8px;">AI Model Computation</h4>
+                    <p style="font-size: 0.92rem; color: var(--text-secondary); line-height: 1.6;">
+                        Our ensemble model cross-references your numbers against thousands of clinical patterns in real time.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="process-card p-4">
+                    <div class="process-number">03</div>
+                    <div class="process-icon mb-3">
+                        <i class="fa fa-stethoscope"></i>
+                    </div>
+                    <h4 style="font-weight: 700; font-size: 1.2rem; margin-bottom: 8px;">Diagnosis & Doctor Review</h4>
+                    <p style="font-size: 0.92rem; color: var(--text-secondary); line-height: 1.6;">
+                        Receive clear risk evaluation, preventative guidance, and automatic regional doctor notifications.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Banner CTA -->
+        <div class="row justify-content-center mt-4">
+            <div class="col-lg-10">
+                <div class="cta-banner p-4 p-md-5 d-flex flex-column flex-md-row align-items-center justify-content-between text-center text-md-left">
+                    <div class="mb-3 mb-md-0">
+                        <h3 style="color: #ffffff; font-weight: 800; font-size: 1.8rem; margin-bottom: 6px;">Ready to check your heart health?</h3>
+                        <p style="color: rgba(255,255,255,0.8); font-size: 0.95rem; margin: 0;">It only takes 2 minutes to complete the AI risk screening.</p>
+                    </div>
+                    <div>
+                        {% if request.user.is_authenticated %}
+                            <a href="/add_heartdetail" class="btn btn-light" style="font-weight: 700; border-radius: 50px; padding: 12px 30px; color: #047857; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+                                Predict Now <i class="fa fa-arrow-right ml-1"></i>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'login' %}" class="btn btn-light" style="font-weight: 700; border-radius: 50px; padding: 12px 30px; color: #047857; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+                                Get Started Free <i class="fa fa-arrow-right ml-1"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+@keyframes heroFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-14px); }
+}
+
+.floating-badge {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 16px;
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    z-index: 2;
+    text-align: left;
+    transition: all 0.3s ease;
+}
+
+.floating-badge:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+}
+
+.badge-top-right {
+    top: 20px;
+    right: -20px;
+}
+
+.badge-bottom-left {
+    bottom: 20px;
+    left: -20px;
+}
+
+.badge-icon-box {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.interactive-card {
+    border-radius: 20px;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.interactive-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 36px rgba(16, 185, 129, 0.15);
+    border-color: rgba(52, 211, 153, 0.5);
+}
+
+.card-icon-wrap {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+}
+
+.interactive-card:hover .card-icon-wrap {
+    transform: scale(1.1);
+}
+
+.process-card {
+    background: var(--surface-glass);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    height: 100%;
+    position: relative;
+}
+
+.process-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary);
+}
+
+.process-number {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: rgba(16, 185, 129, 0.25);
+    line-height: 1;
+    margin-bottom: 12px;
+}
+
+.process-icon {
+    font-size: 2rem;
+    color: var(--primary);
+}
+
+.cta-banner {
+    background: linear-gradient(135deg, #059669 0%, #047857 50%, #065f46 100%);
+    border-radius: 24px;
+    box-shadow: 0 16px 40px rgba(4, 120, 87, 0.3);
+    border: 1px solid rgba(167, 243, 208, 0.3);
+}
+
+/* Dark mode adjustments for floating badges & cards */
+html[data-theme="dark"] .floating-badge {
+    background: rgba(15, 23, 42, 0.92);
+    border-color: rgba(51, 65, 85, 0.8);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+html[data-theme="dark"] .process-card {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+html[data-theme="dark"] .process-card:hover {
+    border-color: #10b981;
+}
+
+@media (max-width: 768px) {
+    .badge-top-right, .badge-bottom-left {
+        position: static;
+        margin: 10px auto;
+        display: inline-flex;
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,251 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block body %}
+<style>
+/* ========== PATIENT DASHBOARD STYLES ========== */
+.patient-dashboard {
+    padding: 2.5rem 0;
+    background: transparent;
+    min-height: 100vh;
+}
+
+.dashboard-header {
+    margin-bottom: 3rem;
+    padding: 2rem 0;
+    text-align: center;
+}
+
+.dashboard-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+    margin: 0 0 1rem 0;
+}
+
+.dashboard-header p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* ACTION CARD */
+.action-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.action-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #10b981, #14b8a6);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.action-card:hover {
+    transform: translateX(4px);
+    box-shadow: 0 12px 30px rgba(16, 185, 129, 0.1);
+    border-color: #10b981;
+}
+
+.action-card:hover::before {
+    transform: scaleY(1);
+}
+
+.action-icon {
+    font-size: 2.5rem;
+    color: #10b981;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+.action-content {
+    flex-grow: 1;
+}
+
+.action-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.3rem 0;
+}
+
+.action-description {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.action-arrow {
+    font-size: 1.5rem;
+    color: #10b981;
+    transition: transform 0.3s;
+}
+
+.action-card:hover .action-arrow {
+    transform: translateX(4px);
+}
+
+/* WELCOME BANNER */
+.welcome-banner {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 2.5rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    text-align: center;
+    box-shadow: 0 12px 40px rgba(16, 185, 129, 0.25);
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 400px;
+    height: 400px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+.welcome-banner h2 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+    position: relative;
+    z-index: 1;
+}
+
+.welcome-banner p {
+    font-size: 1rem;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+    opacity: 0.95;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .dashboard-header h1 { font-size: 1.8rem; }
+    .action-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+    }
+    .action-icon { 
+        width: 50px;
+        height: 50px;
+        font-size: 2rem;
+    }
+    .action-card:hover {
+        transform: translateY(-4px);
+    }
+}
+</style>
+
+<div class="patient-dashboard">
+    <div class="container">
+        <!-- Welcome Banner -->
+        <div class="welcome-banner">
+            <h2><i class="fa fa-heartbeat mr-2"></i>Heart Disease Prediction System</h2>
+            <p>Monitor your heart health with our advanced AI-powered prediction system</p>
+        </div>
+
+        <!-- Header Section -->
+        <div class="dashboard-header">
+            <h1>Your Dashboard</h1>
+            <p>Quick access to all your health management tools</p>
+        </div>
+
+        <!-- Action Cards Grid -->
+        <div class="row">
+            <div class="col-lg-6">
+                <a href="{% url 'add_heartdetail' %}" class="action-card">
+                    <div class="action-icon">
+                        <i class="fa fa-heart"></i>
+                    </div>
+                    <div class="action-content">
+                        <h3 class="action-title">Predict Heart Disease Risk</h3>
+                        <p class="action-description">Enter your health data and get instant AI prediction</p>
+                    </div>
+                    <div class="action-arrow">
+                        <i class="fa fa-arrow-right"></i>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-6">
+                <a href="{% url 'profile_doctor' %}" class="action-card">
+                    <div class="action-icon">
+                        <i class="fa fa-user-circle"></i>
+                    </div>
+                    <div class="action-content">
+                        <h3 class="action-title">View Your Profile</h3>
+                        <p class="action-description">Manage your personal health information</p>
+                    </div>
+                    <div class="action-arrow">
+                        <i class="fa fa-arrow-right"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <a href="{% url 'view_search_pat' %}" class="action-card">
+                    <div class="action-icon">
+                        <i class="fa fa-history"></i>
+                    </div>
+                    <div class="action-content">
+                        <h3 class="action-title">Prediction History</h3>
+                        <p class="action-description">Track all your previous health predictions</p>
+                    </div>
+                    <div class="action-arrow">
+                        <i class="fa fa-arrow-right"></i>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-6">
+                <a href="{% url 'sent_feedback' %}" class="action-card">
+                    <div class="action-icon">
+                        <i class="fa fa-comments"></i>
+                    </div>
+                    <div class="action-content">
+                        <h3 class="action-title">Send Feedback</h3>
+                        <p class="action-description">Share your experience and help us improve</p>
+                    </div>
+                    <div class="action-arrow">
+                        <i class="fa fa-arrow-right"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

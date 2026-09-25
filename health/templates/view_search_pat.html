@@ -1,0 +1,291 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block body %}
+
+<style>
+/* ========== PREDICTION LOGS & SEARCH HISTORY STYLES ========== */
+.prediction-logs-card {
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+/* TABLE STYLING */
+table.dataTable {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    width: 100% !important;
+    margin: 1.5rem 0 !important;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border) !important;
+}
+
+table.dataTable thead th {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 0.88rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+    border: none !important;
+    padding: 14px 16px !important;
+    vertical-align: middle !important;
+}
+
+table.dataTable tbody tr {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    transition: background-color 0.2s ease;
+}
+
+table.dataTable tbody tr.odd {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+}
+
+table.dataTable tbody tr.even {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+}
+
+table.dataTable tbody tr:hover {
+    background-color: #ecfdf5 !important;
+}
+
+table.dataTable tbody td {
+    padding: 14px 16px !important;
+    vertical-align: middle !important;
+    font-size: 0.92rem !important;
+    color: #0f172a !important;
+    border-top: 1px solid #e2e8f0 !important;
+    border-bottom: none !important;
+}
+
+.log-date-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #334155;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.log-patient-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.data-values-box {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #1e293b;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    word-break: break-all;
+    display: inline-block;
+    max-width: 100%;
+}
+
+.btn-delete-log {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff !important;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.25);
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none !important;
+}
+
+.btn-delete-log:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    color: #ffffff !important;
+}
+
+/* DARK MODE OVERRIDES */
+html[data-theme="dark"] .prediction-logs-card {
+    background: #0f172a !important;
+    border-color: #1e293b !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-theme="dark"] table.dataTable {
+    background: #0f172a !important;
+    border-color: #334155 !important;
+}
+
+html[data-theme="dark"] table.dataTable thead th {
+    background: linear-gradient(135deg, #064e3b 0%, #047857 100%) !important;
+    color: #ffffff !important;
+    border-bottom: 2px solid #10b981 !important;
+}
+
+html[data-theme="dark"] table.dataTable tbody tr,
+html[data-theme="dark"] table.dataTable tbody tr.even {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+}
+
+html[data-theme="dark"] table.dataTable tbody tr.odd {
+    background-color: #141f32 !important;
+    color: #f8fafc !important;
+}
+
+html[data-theme="dark"] table.dataTable tbody tr:hover {
+    background-color: #273549 !important;
+    color: #ffffff !important;
+}
+
+html[data-theme="dark"] table.dataTable tbody td {
+    color: #f8fafc !important;
+    border-top: 1px solid #334155 !important;
+}
+
+html[data-theme="dark"] .log-date-badge {
+    color: #cbd5e1 !important;
+}
+
+html[data-theme="dark"] .log-patient-badge {
+    color: #f8fafc !important;
+}
+
+html[data-theme="dark"] .data-values-box {
+    background: #0d1b2e !important;
+    border-color: #334155 !important;
+    color: #5eead4 !important;
+}
+
+html[data-theme="dark"] .dataTables_wrapper,
+html[data-theme="dark"] .dataTables_wrapper label,
+html[data-theme="dark"] .dataTables_info {
+    color: #cbd5e1 !important;
+}
+
+html[data-theme="dark"] .dataTables_filter input {
+    background: #1e293b !important;
+    border-color: #475569 !important;
+    color: #f8fafc !important;
+}
+</style>
+
+<div class="container-fluid px-lg-5 py-5">
+    <div class="prediction-logs-card card p-4 p-md-5">
+        <!-- Section Header -->
+        <div class="section-header text-center mb-4">
+            <div class="badge-label mb-2" style="display:inline-block; background: rgba(16,185,129,0.12); color: #10b981; font-weight: 700; font-size: 13px; padding: 6px 18px; border-radius: 50px; letter-spacing: 1px; text-transform: uppercase;">
+                <i class="fa fa-line-chart mr-1"></i> Prediction Analytics
+            </div>
+            <h2 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.5px; color: var(--text-primary); margin-top: 8px;">
+                Prediction <span class="gradient-text">Logs & History</span>
+            </h2>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 6px;">
+                Historical cardiac risk assessments generated by the AI prediction model
+            </p>
+        </div>
+
+        <!-- Table Container -->
+        <div class="table-responsive">
+            <table id="example" class="display table table-hover" style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th>Assessment Date</th>
+                        {% if not request.user.patient_set.all.0 %}
+                            <th>Patient Name</th>
+                        {% endif %}
+                        <th>AI Confidence</th>
+                        <th>Risk Assessment</th>
+                        <th>Clinical Parameters</th>
+                        <th style="width: 110px; text-align: center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for i in data %}
+                    <tr>
+                        <td class="font-weight-bold">{{forloop.counter}}</td>
+                        <td>
+                            <span class="log-date-badge">
+                                <i class="fa fa-calendar-check-o text-success mr-1"></i>
+                                {{i.created|date:"d M Y, h:i A"|default:"Recent"}}
+                            </span>
+                        </td>
+                        {% if not request.user.patient_set.all.0 %}
+                        <td>
+                            <span class="log-patient-badge">
+                                <i class="fa fa-user-circle text-primary mr-1"></i>
+                                {% if i.patient.user.first_name or i.patient.user.last_name %}
+                                    {{i.patient.user.first_name}} {{i.patient.user.last_name}}
+                                {% else %}
+                                    {{i.patient.user.username|default:"Patient"}}
+                                {% endif %}
+                            </span>
+                        </td>
+                        {% endif %}
+                        <td>
+                            <span class="badge" style="background: rgba(16,185,129,0.15); color: #10b981; font-weight: 700; border: 1px solid rgba(16,185,129,0.35); font-size: 0.88rem; padding: 6px 12px; border-radius: 20px;">
+                                <i class="fa fa-bolt mr-1"></i>{{i.prediction_accuracy|floatformat:1}}%
+                            </span>
+                        </td>
+                        <td>
+                            {% if i.result == "0" %}
+                                <span class="badge" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; font-size: 0.88rem; padding: 6px 14px; border-radius: 20px; font-weight: 700; box-shadow: 0 2px 8px rgba(16,185,129,0.3);">
+                                    <i class="fa fa-check-circle mr-1"></i>Healthy
+                                </span>
+                            {% else %}
+                                <span class="badge" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #ffffff; font-size: 0.88rem; padding: 6px 14px; border-radius: 20px; font-weight: 700; box-shadow: 0 2px 8px rgba(239,68,68,0.3);">
+                                    <i class="fa fa-exclamation-triangle mr-1"></i>At Risk
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="data-values-box" title="Clinical Parameter Values">
+                                <i class="fa fa-sliders mr-1 text-primary"></i>
+                                {{i.values_list}}
+                            </div>
+                        </td>
+                        <td style="text-align: center;">
+                            <a href="/delete_searched/{{i.id}}" class="btn-delete-log" onclick="return confirm('Are you sure you want to delete this prediction log?')" title="Delete Log">
+                                <i class="fa fa-trash-o"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5">
+                            <div style="opacity: 0.8;">
+                                <i class="fa fa-history fa-3x text-muted mb-3 d-block"></i>
+                                <h5 style="color: var(--text-primary); font-weight: 700;">No Prediction Logs Found</h5>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                                    Start a new cardiac risk assessment from the prediction page.
+                                </p>
+                                <a href="{% url 'predict_disease' %}" class="btn btn-primary-custom btn-sm mt-2">
+                                    <i class="fa fa-heartbeat mr-1"></i> Predict Disease
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
