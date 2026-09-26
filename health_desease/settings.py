@@ -78,14 +78,15 @@ WSGI_APPLICATION = 'health_desease.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-if os.environ.get('VERCEL') or not os.access(str(BASE_DIR), os.W_OK):
+if os.name != 'nt' or os.environ.get('VERCEL'):
     tmp_db = os.path.join('/tmp', 'db.sqlite3')
     orig_db = os.path.join(BASE_DIR, 'db.sqlite3')
-    if os.path.exists(orig_db) and not os.path.exists(tmp_db):
+    if os.path.exists(orig_db) and (not os.path.exists(tmp_db) or os.path.getsize(tmp_db) == 0):
         try:
             shutil.copy2(orig_db, tmp_db)
+            os.chmod(tmp_db, 0o666)
         except Exception as e:
-            print(f"Error copying sqlite db to /tmp: {e}")
+            pass
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -145,10 +146,7 @@ STATICFILES_DIRS = [
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
-if os.environ.get('VERCEL'):
-    MEDIA_ROOT = os.path.join('/tmp', 'media')
-else:
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
