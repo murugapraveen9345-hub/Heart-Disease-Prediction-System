@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 orig_db = os.path.join(BASE_DIR, 'db.sqlite3')
 tmp_db = os.path.join('/tmp', 'db.sqlite3')
 
-if os.name != 'nt' or os.environ.get('VERCEL'):
+if os.environ.get('VERCEL'):
     try:
         if os.path.exists(orig_db) and (not os.path.exists(tmp_db) or os.path.getsize(tmp_db) == 0):
             shutil.copy2(orig_db, tmp_db)

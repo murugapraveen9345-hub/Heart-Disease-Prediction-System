@@ -29,6 +29,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com',
+    'https://*.vercel.app',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
+
 
 # Application definition
 
@@ -78,7 +85,7 @@ WSGI_APPLICATION = 'health_desease.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-if os.name != 'nt' or os.environ.get('VERCEL'):
+if os.environ.get('VERCEL'):
     tmp_db = os.path.join('/tmp', 'db.sqlite3')
     orig_db = os.path.join(BASE_DIR, 'db.sqlite3')
     if os.path.exists(orig_db) and (not os.path.exists(tmp_db) or os.path.getsize(tmp_db) == 0):

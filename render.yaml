@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: heart-disease-prediction
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn health_desease.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.13
+      - key: DEBUG
+        value: "False"
