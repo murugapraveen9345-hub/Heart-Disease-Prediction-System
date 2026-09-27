@@ -2,7 +2,13 @@
 {% load static %}
 {% block body %}
 {% if error == "create" %}
-<script>alert('Registration Successful'); window.location="{% url 'login' %}";</script>
+<script>alert('Registration Successful! Please login with your credentials.'); window.location="{% url 'login' %}";</script>
+{% endif %}
+{% if error == "exists" %}
+<script>alert('Username already taken! Please choose a different username.');</script>
+{% endif %}
+{% if error == "not" %}
+<script>alert('Registration failed! Please verify your inputs and try again.');</script>
 {% endif %}
 
 <section style="min-height: 85vh; display: flex; align-items: center; padding: 60px 0;">

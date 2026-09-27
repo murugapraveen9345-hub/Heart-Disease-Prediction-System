@@ -125,25 +125,31 @@ def Login_admin(request):
 def Signup_User(request):
     error = ""
     if request.method == 'POST':
-        f = request.POST['fname']
-        l = request.POST['lname']
-        u = request.POST['uname']
-        e = request.POST['email']
-        p = request.POST['pwd']
-        d = request.POST['dob']
-        con = request.POST['contact']
-        add = request.POST['add']
-        type = request.POST['type']
-        im = request.FILES['image']
-        dat = datetime.date.today()
-        user = User.objects.create_user(email=e, username=u, password=p, first_name=f,last_name=l)
-        if type == "Patient":
-            Patient.objects.create(user=user,contact=con,address=add,image=im,dob=d)
+        f = request.POST.get('fname', '')
+        l = request.POST.get('lname', '')
+        u = request.POST.get('uname', '')
+        e = request.POST.get('email', '')
+        p = request.POST.get('pwd', '')
+        d = request.POST.get('dob', '')
+        con = request.POST.get('contact', '')
+        add = request.POST.get('add', '')
+        type = request.POST.get('type', 'Patient')
+        im = request.FILES.get('image', None)
+        
+        if User.objects.filter(username=u).exists():
+            error = "exists"
         else:
-            Doctor.objects.create(dob=d,image=im,user=user,contact=con,address=add,status=2)
-        error = "create"
-    d = {'error':error}
-    return render(request,'register.html',d)
+            try:
+                user = User.objects.create_user(email=e, username=u, password=p, first_name=f, last_name=l)
+                if type == "Patient":
+                    Patient.objects.create(user=user, contact=con, address=add, image=im, dob=d)
+                else:
+                    Doctor.objects.create(dob=d, image=im, user=user, contact=con, address=add, status=2)
+                error = "create"
+            except Exception as ex:
+                error = "not"
+    d = {'error': error}
+    return render(request, 'register.html', d)
 
 def Logout(request):
     logout(request)
